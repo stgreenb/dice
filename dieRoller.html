@@ -1,0 +1,593 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Die Roller -- HeroCentral (Are You HERO Enough?)</title>
+<style type="text/css">
+body { /* affects the general site-wide look....fonts, etc. */
+	background-color: white;
+	font-family: Verdana;
+	font-size: 10pt;
+	width: auto;
+	min-width: 900px;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+			#resultsArea {
+				min-height: 50px;
+				border-top: dotted #999 1px;
+				border-bottom: dotted #999 1px;
+				font-family: Myriad, Verdana, Helvetica, Arial, sans-serif;
+				font-size: 12px;
+			}
+		</style>
+		<script type="text/javascript">
+
+	var djConfig = {
+		debugAtAllCosts: false,
+		isDebug: false
+	};
+
+</script>
+<meta http-equiv="content-type" content="text/html;charset=windows-1252" />
+<script type="text/javascript">
+				function isDigit(num) {
+					if (num.length > 1) return false;
+					var string = "1234567890";
+					if (string.indexOf(num) != -1) return true;
+					return false;
+				}
+				function rollEm() {
+					var rollString = new String(document.dieRoller.elements["rollString"].value);
+					var orig = "[" + rollString + "]";
+					var ret = "";
+        			rollString = rollString.toUpperCase();
+        			rollString = rollString.replace(" ", "");
+        			if (rollString.indexOf("LOCATION") == 0) {
+			        	var add = 0;
+			        	var dice = 3;
+			        	if (rollString != "LOCATION") {
+			        		var check = rollString.substring(8, rollString.length);
+			        		if (check.indexOf(",") == 0) {
+			        			check = check.substring(1, check.length);
+			        			if (check == "HEAD") {
+			        				add = 3;
+			        				dice = 1;
+			        			}
+			        			else if (check == "HIGH") {
+			        				add=1;
+			        				dice=2;
+			        			}
+			        			else if (check == "BODY") {
+			        				add=4;
+			        				dice=2;
+			        			}
+			        			else if (check == "LOW") {
+			        				add=7;
+			        				dice=2;
+			        			}
+			        			else if (check == "LEG") {
+			        				add=12;
+			        				dice=1;
+			        			}
+			        			else {
+			        				return orig;
+			        			}
+			        		}
+			        		else if (check.indexOf("+") == 0) {
+			        			check = check.substring(1, check.length);
+			        			try {
+			        				add = parseInt(check);
+			        			}
+			        			catch(exp) {
+			        				document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+									return;
+			        			}
+			        		}
+			        		else if (check.indexOf("-") == 0){
+			        			try {
+			        				add = parseInt(check);
+			        			}
+			        			catch(exp) {
+			        				document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+									return;
+			        			}
+			        		}
+			        		else {
+			        			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+								return;
+			        		}
+			        	}
+			        	var total = add;
+            			for (var i = 0; i < dice; i++) {
+                			var die = Math.ceil(Math.random() * 6);
+                			total += die;
+           	 			}
+			            if (total <= 5) {
+			            	ret += orig+": "+total+" = Head";
+			            }
+			            else if (total <= 6) {
+			            	ret += orig+": "+total+" = Hands";
+			            }
+			            else if (total <= 8) {
+			            	ret += orig+": "+total+" = Arms";
+			            }
+			            else if (total <= 9) {
+			            	ret += orig+": "+total+" = Shoulders";
+			            }
+			            else if (total <= 11) {
+			            	ret += orig+": "+total+" = Chest";
+			            }
+			            else if (total <= 12) {
+			            	ret += orig+": "+total+" = Stomach";
+			            }
+			            else if (total <= 13) {
+			            	ret += orig+": "+total+" = Vitals";
+			            }
+			            else if (total <= 14) {
+			            	ret += orig+": "+total+" = Thighs";
+			            }
+			            else if (total <= 16) {
+			            	ret += orig+": "+total+" = Legs";
+			            }
+			            else {
+			            	ret += orig+": "+total+" = Feet";
+			            }
+			        }
+        			else if (rollString == "ROLL") {
+            				var total = 0;
+            				for (var i = 0; i < 3; i++) {
+                				var die = Math.ceil(Math.random() * 6);
+                				total += die;
+           	 				}
+							ret += "[roll]: " + total;
+        			} else if (rollString.toUpperCase().indexOf("HIT,OCV") == 0) {
+        				ocvString = rollString.substring(rollString.toUpperCase().indexOf("OCV")+3, rollString.length);
+            			ocv = 0;
+            			if (ocvString.length < 1) {
+                			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+							return;
+            			}
+            			try {
+                			ocv = parseInt(ocvString);
+            			}
+            			catch(exp) {
+                			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+							return;
+            			}
+            			var total = 0;
+            			for (var i = 0; i < 3; i++) {
+                			var die = Math.ceil(Math.random() * 6);
+                			total += die;
+           	 			}
+            			dcvHit = 11 + ocv - total;
+            			if (dcvHit < 0 || total == 18) {
+            				document.getElementById("resultsArea").innerHTML = orig +": ("+total+", automatically misses)";
+							return;
+            			}
+            			document.getElementById("resultsArea").innerHTML = orig+": ("+total+", hits DCV "+dcvHit+ " or lower)";
+						return;
+        			} else if (rollString.toUpperCase().indexOf("HIT,ECV") == 0) {
+        				ocvString = rollString.substring(rollString.toUpperCase().indexOf("ECV")+3, rollString.length);
+            			ocv = 0;
+            			if (ocvString.length < 1) {
+                			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+							return;
+            			}
+            			try {
+                			ocv = parseInt(ocvString);
+            			}
+            			catch(exp) {
+                			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+							return;
+            			}
+            			var total = 0;
+            			for (var i = 0; i < 3; i++) {
+                			var die = Math.ceil(Math.random() * 6);
+                			total += die;
+           	 			}
+            			dcvHit = 11 + ocv - total;
+            			if (dcvHit < 0 || total == 18) {
+            				document.getElementById("resultsArea").innerHTML = orig +": ("+total+", automatically misses)";
+							return;
+            			}
+            			document.getElementById("resultsArea").innerHTML = orig+": ("+total+", hits ECV "+dcvHit+ " or lower)";
+						return;
+        			} else if (rollString.toUpperCase().indexOf("HIT,OMCV") == 0) {
+        				ocvString = rollString.substring(rollString.toUpperCase().indexOf("OMCV")+4, rollString.length);
+            			ocv = 0;
+            			if (ocvString.length < 1) {
+                			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+							return;
+            			}
+            			try {
+                			ocv = parseInt(ocvString);
+            			}
+            			catch(exp) {
+                			document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+							return;
+            			}
+            			var total = 0;
+            			for (var i = 0; i < 3; i++) {
+                			var die = Math.ceil(Math.random() * 6);
+                			total += die;
+           	 			}
+            			dcvHit = 11 + ocv - total;
+            			if (dcvHit < 0 || total == 18) {
+            				document.getElementById("resultsArea").innerHTML = orig +": ("+total+", automatically misses)";
+							return;
+            			}
+            			document.getElementById("resultsArea").innerHTML = orig+": ("+total+", hits DMCV "+dcvHit+ " or lower)";
+						return;
+        			} else if (rollString.lastIndexOf("-") == rollString.length - 1) {
+					var total = 0;
+            				for (var i = 0; i < 3; i++) {
+                				var die = Math.ceil(Math.random() * 6);
+                				total += die;
+           	 			}
+					if (rollString.lastIndexOf(",") <= 0) {	
+						document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+						return;
+					}
+					var lim = rollString.substring(rollString.lastIndexOf(",")+1, rollString.lastIndexOf("-"));
+					
+					var limit = 0;
+					try {
+                				limit = parseInt(lim);
+            				} catch (exp) {
+                				document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    				return;
+            				}
+					var passfail = "succeeded";
+					var madeBy = 0;
+					if (total <= limit) {
+						madeBy = limit - total;
+					} else {
+						passfail = "failed";
+						madeBy = total - limit;
+					}
+            				ret += orig + ": (" + total + ", " + passfail + " by "+ madeBy + ")";
+				}else {
+            			// time to parse it out...
+            			if (rollString.indexOf("D") <= 0
+                    		|| rollString.lastIndexOf("D") > rollString.indexOf("D")) {
+                    		//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+				document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			var x = rollString.substring(0, rollString.indexOf("D"));
+            			var dice = 0;
+            			try {
+                			dice = parseFloat(x);
+            			} catch (exp) {
+                			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			if (dice < 0 || dice > 1000) {
+                			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			rollString = rollString.substring(rollString.indexOf("D") + 1, rollString.length);
+            			var y = "";
+            			var counter = 0;
+            			while (rollString.length > counter && isDigit(rollString.charAt(counter))) {
+                			y += rollString.charAt(counter);
+                			counter++;
+            			}	
+            			if (y.length == 0) {
+                			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			var sides = 0;
+            			try {
+                			sides = parseInt(y);
+            			} catch (exp) {
+            				//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			if (sides <= 0 || sides > 1000) {
+               				//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			rollString = rollString.substring(counter, rollString.length);
+            			var bonus = 0;
+           				 if (rollString.length > 1 && rollString.substring(0, 2) == "+1") {
+                			bonus = 1;
+                			rollString = rollString.substring(2, rollString.length);
+            			} else if (rollString.length > 1 && rollString.substring(0, 2) == "-1") {
+                			bonus = -1;
+                			rollString = rollString.substring(2, rollString.length);
+            			}
+
+            			var killing = false;
+            			var explosion = false;
+            			var stunMult = 0;
+            			var fadeRate = 2;
+            			if (rollString.length > 0 && rollString.charAt(0) == 'K') {
+                			killing = true;
+                			rollString = rollString.substring(1, rollString.length);
+                			if (rollString.length > 0 && rollString.charAt(0) == '+') {
+                    			counter = 0;
+                    			rollString = rollString.substring(1, rollString.length);
+                   				var z = "";
+                    			while (rollString.length > counter && isDigit(rollString.charAt(counter))) {
+                        			z += rollString.charAt(counter);
+                        			counter++;
+                    			}
+                    			if (z.length == 0) {
+                        			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+						document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    				return;
+                    			}
+                   	 			try {
+                        			stunMult = parseInt(z);
+                    			} catch (exp) {
+                        			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+						document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    				return;
+                    			}
+                    			rollString = rollString.substring(counter, rollString.length);
+                			} else if (rollString.length > 0 && rollString.charAt(0) == '-') {
+                    			counter = 0;
+                    			rollString = rollString.substring(1, rollString.length);
+                    			var z ="";
+                    			while (rollString.length > counter && isDigit(rollString.charAt(counter))) {
+                        			z += rollString.charAt(counter);
+                        			counter++;
+                    			}
+                    			if (z.length == 0) {
+                        			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+						document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    				return;
+                   	 			}
+                    			try {
+                        			stunMult = (-1 * parseInt(z));
+                    			} catch (exp) {
+                        			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+						document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    				return;
+                    			}
+                    			rollString = rollString.substring(counter, rollString.length);
+                			}
+            			}
+            			if (rollString.length > 0 && rollString.substring(0, 2) == "EX") {
+                			explosion = true;
+                			rollString = rollString.substring(2, rollString.length);
+                			if (rollString.length == 0) {
+                    			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    			return;
+                			}
+               		 		try {
+                    			fadeRate = parseInt(rollString);
+                			} catch (exp) {
+                    			//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    			return;
+                			}
+                			if (fadeRate <= 0) {
+                    			document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					//document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    			return;
+                			}
+                			rollString = "";
+            			}
+            			if (rollString.length > 0) {
+               				//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+            			if ((killing || explosion) && sides != 6) {
+               				//document.dieRoller.elements["results"].value = orig + ": invalid roll.";
+					document.getElementById("resultsArea").innerHTML = orig + ": invalid roll.";
+                    		return;
+            			}
+
+            			// pant....it's parsed....now for the rolling and results.
+            			var total = 0;
+            			var rolls = new Array();
+            			var partialDie = 0;
+            			var body = 0;
+            			var stun = 0;
+            			for (var i = 0; i < Math.floor(dice); i++) {
+                			var die = Math.ceil(Math.random() * sides);
+                			total += die;
+                			rolls[i] = die;
+                			if (die > 1)
+                    			body += 1;
+                			if (die > 5)
+                    			body += 1;
+            			}
+            			if (Math.floor(dice) < dice - .000001) {
+                			var partial = dice - Math.floor(dice);
+                			var bd = partial * Math.ceil(Math.random() * sides);
+                			if (bd < 1) bd = 1;
+                			bd = bd + .000001;
+                			bd = Math.round(bd);
+                			partialDie = bd;
+                			total += bd;
+               				if (bd > 1)
+                    			body += 1;
+                			if (bd > 5)
+                    			body += 1;
+            			}
+            			total += bonus;
+            			stun = total;
+            			if (killing) {
+                			body = total;
+                			var mult = Math.ceil(Math.random() * sides * .5)  + (stunMult);
+                			if (mult < 1) mult = 1;
+                			stun = body * mult;
+                			stunMult = mult; //will be used for explosions
+            			}
+            			ret += orig + ": ";
+            			var rollsShown = false;
+            			if (rolls.length > 1 || (rolls.length > 0 && partialDie > 0)) {
+                			rollsShown = true;
+                			for (var i=0; i<rolls.length; i++) {
+                    			if (i > 0)
+                        			ret += ", ";
+                    			ret += rolls[i];
+                			}
+                			if (partialDie > 0) {
+                    			if (rolls.length > 0) {
+                        			ret += " + ";
+                    			}
+                    			ret += partialDie;
+                			}
+                			ret += " ";
+            			}
+            			if (explosion) {
+               				if (partialDie != 0) rolls[rolls.length] = partialDie;
+               				rolls.sort();
+                			for (var i=0; i<rolls.length; i++) {
+                    			if (rollsShown) {
+                    				ret += "<br />";
+                    				ret += "     ";
+                    			}
+                    			ret += (fadeRate * i) + "\": ";
+                    			var tot = bonus;
+                    			var st = 0;
+                    			var bd = 0;
+                    			for (var j = 0; j<rolls.length-i; j++) {
+                        			tot += rolls[j];
+                        			if (rolls[j]>1) bd += 1;
+                        			if (rolls[j]>5) bd += 1;
+                    			}
+                    			st = tot;
+                    			if (killing) {
+                        			bd = tot;
+                        			st = bd * stunMult;
+                        			ret += bd + " BODY, "+st+" STUN";
+                    			}
+                    			else {
+                        			ret += st + " STUN, "+bd+" BODY";
+                    			}
+                			}
+            			}
+            			else if (killing) {
+                			if (rollsShown) ret += "(";
+                				ret += body + " BODY, "+stun+" STUN";
+                			if (rollsShown) ret += ")";
+            			}
+            			else {
+                			if (rollsShown) ret += "(";
+                			if (sides == 6) ret += stun+" STUN, "+body+" BODY";
+                			else if (rollsShown) ret += stun + " TOTAL";
+                			else ret += stun+"";
+                			if (rollsShown) ret += ")";
+            			}
+					}
+					document.getElementById("resultsArea").innerHTML = ret;
+					//document.dieRoller.elements["results"].value = ret;
+                    return;
+                }
+		</script>
+</head>
+<body>
+<div id="ContentArea" style="margin: 0; padding: 0;">
+<div class="Container Cold" style="margin: 0; padding: 0;">
+<div class="BlockHeader" dojoType="ContentPane">
+<form name="dieRoller" action="" onsubmit="return false;" style="margin: 0; padding: 0;">
+<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<tr>
+		<td style="width: 250px;">
+			Roll: <input type="text" name="rollString"
+			value="" size="20" style="width: 150px;" /></td><td align="left"><button dojoType="Button"
+			onclick="rollEm(); document.getElementById('Content').style.display='none'; document.getElementById('Content').style.display='block';" >
+			Roll Em!
+			</button>
+		</td>
+	</tr>
+
+</table>
+</form>
+</div>
+<div class="BlockContent" dojoType="ContentPane">
+<strong>Results:</strong>
+		<div id="resultsArea"></div>
+<div dojoType="ContentPane" class="BlockTitle" style="cursor: pointer; font-size: 14pt; font-weight: bold;" onclick="if (document.getElementById('instructions').style.display == 'none') {document.getElementById('instructions').style.display='block';} else {document.getElementById('instructions').style.display='none';};">
+	Instructions for Use
+</div>
+<div id="instructions" dojoType="ContentPane" style="display: block;" toggle="wipe" toggleDuration="500">
+<p>xdy will roll x number of y-sided dice. X can be any decimal value
+(greater than 0). Y is any positive integer. This allows you to roll
+half-dice. For example: <br />
+<em>4.5d6 will roll 4 1/2d6</em><br />
+</p>
+<p>You can modify this basic string with several elements:
+<ol>
+	<li>xdy+1 will add one pip to the results of your roll. For example: <br />
+	<em>4d6+1 will add one pip to the results of a 4d6 roll.</em><br />
+	</li>
+	<li>xdy-1 will subtract one pip from the results of your roll. For
+	example: <br />
+	<em>4d6-1 will subtract one pip from the results of a 4d6 roll.</em><br />
+	</li>
+	<li>xdyk will roll killing dice. For example: <br />
+	<em>4d6k will roll 4d6 of Killing Damage</em><br />
+	You can adjust the Stun Multiplier by either of the following alternate
+	versions:
+	<ol>
+		<li>xdyk+z will add z to the standard Stun Multiplier of 1/2d6. For
+		example: <br />
+		<em>4d6k+2 will roll a 4d6 Killing Attack with a +2 Stun Multiplier
+		(rolling 1/2d6+2 for the Stun Multiple)</em><br />
+		</li>
+		<li>xdyk-z will subtract z from the standard Stun Multiplier of 1/2d6.
+		For example: <br />
+		<em>4d6k-1 will roll a 4d6 Killing Attack with a -1 Stun Multiplier
+		(rolling 1/2d6-1 for the Stun Multiple -- minimum of 1).</em><br />
+		</li>
+	</ol>
+	</li>
+	<li>xdyEXz will roll an Explosion which fades at 1 die/z meters. For example:
+	<br />
+	<em>4d6EX2 will roll a 4d6 Explosion which fades at the rate of 1 die /
+	2m.</em><br />
+	The highest die is subtracted at each fade interval until the 0 die
+	point is achieved (with the results at each fade interval listed in the
+	output).</li>
+</ol>
+</p>
+<p>You can combine any of these formats for more sophisticated rolls.
+For example: <br />
+<em>4d6+1k+1EX2 will roll a 4d6+1 Killing Attack Explosion with a +1
+Stun Multiplier which fades at a rate of 1 die/2m.</em><br />
+</p>
+<p>You can roll a skill check by either of the following methods:
+<ol>
+	<li>[roll] will simply roll 3d6 and display the total.</li>
+	<li>{skill name}, {roll}- will make a skill check. For example: <br />
+	<em>Stealth, 14-</em> will roll 3d6 and compare it to the skill level
+	of 14-, indicating how much you succeed or fail by.</li>
+</ol>
+</p>
+<p>You can roll a "to hit" roll by entering "HIT, OCV #" (or "HIT, ECV #", or "HIT, OMCV #"). For example: <br />
+<em>HIT, OCV 10</em> will roll 3d6 and output the roll and the maximum
+DCV that the roll will hit for an OCV of 10</p>
+<p>
+You can roll a hit location by entering any of the following:
+<ol><li><em>LOCATION</em> will simply roll 3d6 and display the total and the hit location that you hit.</li>
+<li><em>LOCATION-x</em> will roll 3d6 and subtract "x" from the total, displaying the result and the hit location that you hit.</li>
+<li><em>LOCATION+x</em> will roll 3d6 and add "x" to the total, displaying the result and the hit location that you hit.</li>
+<li><em>LOCATION,HEAD</em> will perform a placed shot on the Head-Shoulders</li>
+<li><em>LOCATION,HIGH</em> will perform a placed shot on the Head-Vitals</li>
+<li><em>LOCATION,BODY</em> will perform a placed shot on the Hands-Legs</li>
+<li><em>LOCATION,LOW</em> will perform a placed shot on the Shoulders-Feet</li>
+<li><em>LOCATION,LEG</em> will perform a placed shot on the Vitals-Feet</li>
+</ol>
+</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
